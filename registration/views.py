@@ -8,7 +8,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
-from .serializers import RegisterSerializers, VerifyOTPSerializer, Loginserializer
+from .serializers import RegisterSerializers, VerifyOTPSerializer, Loginserializer, LogoutSerializer
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password
 from .utils import generate_otp, get_token_for_user
@@ -17,6 +17,7 @@ from .utils import generate_otp, get_token_for_user
 
 class RegisterApiView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = RegisterSerializers
     def post(self, request):
         serializer = RegisterSerializers(data = request.data)
         if serializer.is_valid():
@@ -106,18 +107,22 @@ class LoginView(generics.GenericAPIView):
         
 class LogoutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
-    
+    serializer_class = LogoutSerializer  # <--- This is the key for Swagger!
+
     def post(self, request):
+        # We use the serializer to validate the input first
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
         try:
-            refresh_token = request.data['refresh']
+            refresh_token = serializer.validated_data['refresh']
             token = RefreshToken(refresh_token)
             token.blacklist()
             
-            return Response({"message":"Logged out successfully"},status=status.HTTP_200_OK)
+            return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
         
         except Exception:
-            return Response({"error":"Invalid Token"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({"error": "Invalid Token"}, status=status.HTTP_400_BAD_REQUEST)
 class UserDetailView(generics.RetrieveAPIView):
         
     permission_classes = [IsAuthenticated]

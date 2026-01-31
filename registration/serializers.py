@@ -32,4 +32,7 @@ class Loginserializer(serializers.Serializer):
         
         data['user'] = user
         return data
+    
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(help_text="The refresh token to be blacklisted")
         

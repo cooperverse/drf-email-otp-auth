@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: Register with Email Verification
+  version: 1.0.0
+  description: Registration with Email Verification with JWT Authentication
+paths:
+  /api/login/:
+    post:
+      operationId: login_create
+      tags:
+      - login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Loginserializer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Loginserializer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Loginserializer'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loginserializer'
+          description: ''
+  /api/logout/:
+    post:
+      operationId: logout_create
+      tags:
+      - logout
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/register/:
+    post:
+      operationId: register_create
+      tags:
+      - register
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/user-details/:
+    get:
+      operationId: user_details_retrieve
+      tags:
+      - user-details
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterSerializers'
+          description: ''
+  /api/verify-email/:
+    post:
+      operationId: verify_email_create
+      tags:
+      - verify-email
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Loginserializer:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    RegisterSerializers:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password1:
+          type: string
+          writeOnly: true
+        password2:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password1
+      - password2
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

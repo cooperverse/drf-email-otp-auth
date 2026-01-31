@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'registration',
     'rest_framework_simplejwt',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 MIDDLEWARE = [
@@ -127,7 +129,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':(
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 AUTH_USER_MODEL = 'registration.CustomUser'
@@ -137,3 +140,13 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'jkrafi149@gmail.com'
 EMAIL_HOST_PASSWORD = "yltsufghbqphfieu"
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Register with Email Verification',
+    'DESCRIPTION': 'Registration with Email Verification with JWT Authentication',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+}
